@@ -1,0 +1,48 @@
+{
+  "name": "patch-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Patch: the open-source ptch CLI, the terminal window into Patch Cloud",
+  "license": "MIT",
+  "author": "Adam Parszewski",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xcrrr/ptch.git"
+  },
+  "homepage": "https://github.com/xcrrr/ptch#readme",
+  "bugs": {
+    "url": "https://github.com/xcrrr/ptch/issues"
+  },
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "bin": {
+    "ptch": "./apps/cli/dist/main.js"
+  },
+  "scripts": {
+    "build": "pnpm --filter @patch/cli build",
+    "dev": "pnpm --filter @patch/cli dev",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run --project unit",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --project integration",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
+    "pack:cli": "node scripts/release-pack.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^20.19.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.6.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^4.1.11"
+  }
+}

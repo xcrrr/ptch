@@ -1,0 +1,10 @@
+{
+  "name": "demo-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Small service used to exercise Patch end to end",
+  "scripts": {
+    "test": "node --test"
+  }
+}

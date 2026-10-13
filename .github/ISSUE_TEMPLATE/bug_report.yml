@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in ptch doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please remove API keys, tokens and private code from anything you paste. For security problems, do not use this form: see SECURITY.md.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - The agent (tools, permissions, sessions, terminal UI)
+        - Patch Cloud client (ptch login, ptch cloud ...)
+        - Build, install or documentation
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what ptch did instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `ptch` in …
+        2. Ask …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Terminal output or debug log
+      description: Run with `ptch --debug` and paste the relevant lines from the newest file in `~/.patch/logs` (secrets are redacted, but please double-check).
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: ptch version
+      description: Output of `ptch --version`, plus the commit if you built from source (`git rev-parse --short HEAD`).
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS, terminal and Node version
+      placeholder: Windows 11, Windows Terminal, Node 24
+    validations:
+      required: true

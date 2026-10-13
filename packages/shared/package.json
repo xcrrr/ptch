@@ -1,0 +1,14 @@
+{
+  "name": "@patch/shared",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Provider-neutral model protocol types and small utilities shared across Patch packages",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

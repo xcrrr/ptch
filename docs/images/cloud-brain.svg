@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="876" height="374" viewBox="0 0 876 374" role="img" aria-label="ptch — ~/code/demo-app">
+<title>ptch — ~/code/demo-app</title>
+<style>text{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;font-size:14px;white-space:pre;font-variant-ligatures:none}
+.title{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;font-size:13px;fill:#8b949e}
+.s0{fill:#8f959b}
+.s1{fill:#e6edf3;font-weight:700}
+.s2{fill:#e6edf3}
+.s3{fill:#3fb950}</style>
+<clipPath id="window"><rect width="876" height="374" rx="10"/></clipPath>
+<g clip-path="url(#window)">
+<rect width="876" height="374" fill="#0d1117"/>
+<rect width="876" height="36" fill="#161b22"/>
+<path d="M0 35.5H876" stroke="#30363d"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="18" r="6" fill="#febc2e"/>
+<circle cx="60" cy="18" r="6" fill="#28c840"/>
+<text class="title" x="438" y="22.5" text-anchor="middle">ptch — ~/code/demo-app</text>
+<g shape-rendering="crispEdges">
+</g>
+<g xml:space="preserve">
+<text class="s0" x="34.8" y="63" textLength="184.8">Owner · localhost:8731</text>
+<text class="s1" x="34.8" y="99" textLength="302.4">Sessions expire at their expiry time</text>
+<text class="s0" x="354" y="99" textLength="67.2">decision</text>
+<text class="s0" x="34.8" y="117" textLength="436.8">demo-app · updated just now · written by you · #auth</text>
+<text class="s2" x="34.8" y="153" textLength="294">A session is expired once the clock</text>
+<text class="s1" x="337.2" y="153" textLength="58.8">reaches</text>
+<text class="s2" x="404.4" y="153" textLength="428.4">its expiry, not after it. See [[Tests run with node</text>
+<text class="s2" x="34.8" y="171" textLength="277.2">--test]] for how this is checked.</text>
+<text class="s0" x="34.8" y="207" textLength="75.6">links (1)</text>
+<text class="s2" x="34.8" y="225" textLength="798">→ references  Tests run with node --test  [knowledge] (derived: [[Tests run with node --test]])</text>
+<text class="s1" x="34.8" y="261" textLength="403.2">Linked to &quot;Sessions expire at their expiry time&quot;</text>
+<text class="s3" x="34.8" y="297" textLength="344.4">› → references Tests run with node --test</text>
+<text class="s0" x="396" y="297" textLength="75.6">knowledge</text>
+<text class="s0" x="34.8" y="333" textLength="176.4">enter open · esc done</text>
+<text class="s0" x="648" y="351" textLength="201.6">demo-app · worker online</text>
+</g>
+</g>
+<rect x="0.5" y="0.5" width="875" height="373" rx="9.5" fill="none" stroke="#30363d"/>
+</svg>

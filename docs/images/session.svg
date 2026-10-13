@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="876" height="716" viewBox="0 0 876 716" role="img" aria-label="ptch — ~/code/demo-app">
+<title>ptch — ~/code/demo-app</title>
+<style>text{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;font-size:14px;white-space:pre;font-variant-ligatures:none}
+.title{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;font-size:13px;fill:#8b949e}
+.s0{fill:#e6edf3}
+.s1{fill:#8f959b}
+.s2{fill:#3fb950}
+.s3{fill:#ff7b72}
+.s4{fill:#39c5cf}
+.s5{fill:#0d1117}</style>
+<clipPath id="window"><rect width="876" height="716" rx="10"/></clipPath>
+<g clip-path="url(#window)">
+<rect width="876" height="716" fill="#0d1117"/>
+<rect width="876" height="36" fill="#161b22"/>
+<path d="M0 35.5H876" stroke="#30363d"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="18" r="6" fill="#febc2e"/>
+<circle cx="60" cy="18" r="6" fill="#28c840"/>
+<text class="title" x="438" y="22.5" text-anchor="middle">ptch — ~/code/demo-app</text>
+<rect x="34.8" y="662" width="8.4" height="18" fill="#e6edf3"/>
+<g shape-rendering="crispEdges">
+</g>
+<g xml:space="preserve">
+<text class="s0" x="34.8" y="63" textLength="126">~/code/demo-app</text>
+<text class="s1" x="169.2" y="63" textLength="117.6">· main · clean</text>
+<text class="s0" x="34.8" y="81" textLength="126">claude-opus-5-5</text>
+<text class="s1" x="169.2" y="81" textLength="151.2">· ready · PATCH.md</text>
+<text class="s2" x="18" y="117">›</text>
+<text class="s0" x="34.8" y="117" textLength="546">The session tests are failing. Can you find the cause and fix it?</text>
+<text class="s0" x="34.8" y="153" textLength="210">I&#39;ll run the tests first.</text>
+<text class="s3" x="34.8" y="189" textLength="33.6">bash</text>
+<text class="s0" x="102" y="189" textLength="92.4">node --test</text>
+<text class="s1" x="211.2" y="189" textLength="151.2">Run the test suite</text>
+<text class="s3" x="102" y="207" textLength="226.8">3 passed · 1 failed · 283ms</text>
+<text class="s1" x="102" y="225" textLength="504">✖ a session is expired exactly at its expiry time (1.1137ms)</text>
+<text class="s1" x="102" y="243" textLength="579.6">AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:</text>
+<text class="s0" x="34.8" y="279" textLength="764.4">One failure: a session should be expired exactly at its expiry time. Let me find the check.</text>
+<text class="s1" x="34.8" y="315" textLength="33.6">grep</text>
+<text class="s0" x="102" y="315" textLength="151.2">&quot;isExpired&quot; in src</text>
+<text class="s1" x="261.6" y="315" textLength="159.6">· 1 match in 1 file</text>
+<text class="s1" x="34.8" y="333" textLength="33.6">read</text>
+<text class="s0" x="102" y="333" textLength="159.6">src/auth/session.js</text>
+<text class="s1" x="270" y="333" textLength="84">· 22 lines</text>
+<text class="s4" x="34.8" y="369" textLength="75.6">isExpired</text>
+<text class="s0" x="118.8" y="369" textLength="109.2">compares with</text>
+<text class="s4" x="236.4" y="369">&gt;</text>
+<text class="s0" x="244.8" y="369" textLength="579.6">, so a session is still valid at the instant it expires. Switching to</text>
+<text class="s4" x="832.8" y="369" textLength="16.8">&gt;=</text>
+<text class="s0" x="849.6" y="369">.</text>
+<text class="s1" x="34.8" y="405" textLength="33.6">edit</text>
+<text class="s0" x="102" y="405" textLength="159.6">src/auth/session.js</text>
+<text class="s2" x="278.4" y="405" textLength="16.8">+1</text>
+<text class="s3" x="303.6" y="405" textLength="16.8">-1</text>
+<text class="s1" x="102" y="423" textLength="16.8">11</text>
+<text class="s1" x="102" y="441" textLength="663.6">12   /** A session is expired once the current time reaches its expiry time. */</text>
+<text class="s1" x="102" y="459" textLength="495.6">13   export function isExpired(session, now = Date.now()) {</text>
+<text class="s1" x="102" y="477" textLength="16.8">14</text>
+<text class="s3" x="127.2" y="477" textLength="294">-   return now &gt; session.expiresAt;</text>
+<text class="s1" x="102" y="495" textLength="16.8">14</text>
+<text class="s2" x="127.2" y="495" textLength="302.4">+   return now &gt;= session.expiresAt;</text>
+<text class="s1" x="102" y="513" textLength="50.4">15   }</text>
+<text class="s1" x="102" y="531" textLength="16.8">16</text>
+<text class="s1" x="102" y="549" textLength="588">17   export async function refreshSession(session, now = Date.now()) {</text>
+<text class="s1" x="34.8" y="567" textLength="33.6">bash</text>
+<text class="s0" x="102" y="567" textLength="92.4">node --test</text>
+<text class="s1" x="211.2" y="567" textLength="134.4">Re-run the tests</text>
+<text class="s1" x="102" y="585" textLength="134.4">4 passed · 282ms</text>
+<text class="s0" x="34.8" y="621" textLength="50.4">Fixed:</text>
+<text class="s4" x="93.6" y="621" textLength="75.6">isExpired</text>
+<text class="s0" x="177.6" y="621" textLength="67.2">now uses</text>
+<text class="s4" x="253.2" y="621" textLength="16.8">&gt;=</text>
+<text class="s0" x="270" y="621" textLength="277.2">, so a session expires exactly at</text>
+<text class="s4" x="555.6" y="621" textLength="75.6">expiresAt</text>
+<text class="s0" x="631.2" y="621" textLength="218.4">, as its doc comment says.</text>
+<text class="s0" x="34.8" y="639" textLength="142.8">All 4 tests pass.</text>
+<text class="s2" x="18" y="675">›</text>
+<text class="s5" x="34.8" y="675">R</text>
+<text class="s1" x="43.2" y="675" textLength="109.2">eply to Patch</text>
+<text class="s1" x="34.8" y="693" textLength="814.8">/ for commands · ! for shell · ↑ history                      main · claude-opus-5-5 · 1% context</text>
+</g>
+</g>
+<rect x="0.5" y="0.5" width="875" height="715" rx="9.5" fill="none" stroke="#30363d"/>
+</svg>

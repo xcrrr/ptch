@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.patch/
+*.tsbuildinfo
+.vitest-tmp/
+.e2e-output/
+.claude/worktrees/
+
+# Environment files and signing material never belong in git
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*private-key*.pem
+
+# Local release output (scripts/release-pack.mjs)
+/release/

@@ -1,0 +1,30 @@
+{
+  "name": "@patch/core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Patch agent runtime: agent loop, tools, permissions, sessions, git and workspace awareness",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts",
+    "./redact": "./src/logging/redact.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@patch/shared": "workspace:*",
+    "cross-spawn": "^7.0.6",
+    "diff": "^9.0.0",
+    "ignore": "^7.0.5",
+    "picomatch": "^4.0.3",
+    "tinyglobby": "^0.2.15",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/picomatch": "^4.0.2"
+  }
+}

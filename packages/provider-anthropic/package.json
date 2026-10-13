@@ -1,0 +1,19 @@
+{
+  "name": "@patch/provider-anthropic",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Anthropic (Claude) model provider for Patch",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "@patch/shared": "workspace:*"
+  }
+}

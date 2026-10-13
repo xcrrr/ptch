@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement to ptch
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Patch Cloud itself is a hosted private beta and is not developed in this repository. Requests here should be about the `ptch` CLI and the agent it embeds.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the situation where ptch falls short today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like ptch to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds you've considered
