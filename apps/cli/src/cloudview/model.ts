@@ -61,6 +61,10 @@ export type ViewItem =
   | { kind: 'choose'; id: string; block: Extract<MessageBlock, { type: 'choose_project' }> }
   | { kind: 'help'; id: string; block: Extract<MessageBlock, { type: 'help' }> }
   | { kind: 'unsupported'; id: string; block: Extract<MessageBlock, { type: 'unsupported' }> }
+  /** A screen of Patch HQ the answer points to. */
+  | { kind: 'open'; id: string; block: Extract<MessageBlock, { type: 'open' }> }
+  /** Which model wrote an answer and what it cost. */
+  | { kind: 'meta'; id: string; text: string }
   | {
       kind: 'entry';
       id: string;
@@ -306,10 +310,19 @@ function messageItems(
     return out;
   }
   const has = (type: MessageBlock['type']): boolean => message.blocks.some((b) => b.type === type);
+  // An answer the chat model is still writing grows: nothing of it is final yet.
+  const writing = message.status === 'pending';
   message.blocks.forEach((block, index) => {
     const id = `${message.id}:${index}`;
     switch (block.type) {
       case 'text': {
+        // A model's answer is the text itself: it always stays.
+        if (message.ai || writing) {
+          if (block.text.trim() !== '') {
+            out.push({ item: { kind: 'text', id, markdown: block.text }, settled: !writing });
+          }
+          break;
+        }
         // The cards say what the prose says: a status card, a proposal card, a run card. The words
         // are left out when a card follows, except what adds something (the agent's answer).
         if (has('status') || has('proposal')) break;
@@ -357,10 +370,23 @@ function messageItems(
       case 'unsupported':
         out.push({ item: { kind: 'unsupported', id, block }, settled: true });
         break;
+      case 'open':
+        out.push({ item: { kind: 'open', id, block }, settled: !writing });
+        break;
       default:
         out.push({ item: { kind: 'unknown', id }, settled: true });
     }
   });
+  if (writing) {
+    // Nothing of a growing answer goes to the scrollback before it is complete.
+    for (const built of out) built.settled = false;
+  } else if (message.ai) {
+    const cost = message.ai.costUsd < 0.01 ? '<$0.01' : `$${message.ai.costUsd.toFixed(2)}`;
+    out.push({
+      item: { kind: 'meta', id: `${message.id}:meta`, text: `${message.ai.model} · ${cost}` },
+      settled: true,
+    });
+  }
   return out;
 }
 

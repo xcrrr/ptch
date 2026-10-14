@@ -148,6 +148,12 @@ export class FakeApi implements CloudViewApi {
   /** Every call, "method arg", for assertions. */
   log: string[] = [];
   uploads: Array<{ projectId: string; fileCount: number }> = [];
+  /**
+   * When set, the answer is written by "the chat model": sendMessage returns it pending and each
+   * getMessage returns the next step (the last one should have no status: complete).
+   */
+  answerSteps: Array<Partial<MessageRecord>> | null = null;
+
   /** What the assistant answers; the test replaces it. */
   reply: (text: string, projectId: string | null | undefined) => MessageBlock[] = (text) => [
     { type: 'text', text: `You said: ${text}` },
@@ -302,18 +308,37 @@ export class FakeApi implements CloudViewApi {
     return { conversation, messages: this.messages.get(id) ?? [] };
   }
 
+  async getMessage(id: string, messageId: string) {
+    this.enter(`getMessage ${messageId}`);
+    const list = this.messages.get(id) ?? [];
+    const index = list.findIndex((m) => m.id === messageId);
+    if (index < 0) throw new CloudApiError('Unknown message', 404, 'not_found');
+    const step = this.answerSteps?.shift();
+    if (step) {
+      const { status: _status, activity: _activity, ...rest } = list[index] as MessageRecord;
+      list[index] = { ...rest, ...step } as MessageRecord;
+    }
+    return list[index] as MessageRecord;
+  }
+
   async sendMessage(id: string, input: { text: string; projectId?: string | null }) {
     this.enter(`sendMessage ${input.text}`);
     const conversation = this.conversations.get(id) as ConversationRecord;
     if (input.projectId) conversation.projectId = input.projectId;
     const list = this.messages.get(id) as MessageRecord[];
     const user = message(`msg_${++this.seq}`, 'user', [{ type: 'text', text: input.text }], id);
-    const assistant = message(
-      `msg_${++this.seq}`,
-      'assistant',
-      this.reply(input.text, conversation.projectId),
-      id,
-    );
+    const assistant: MessageRecord = this.answerSteps
+      ? {
+          ...message(`msg_${++this.seq}`, 'assistant', [], id),
+          status: 'pending',
+          activity: 'Thinking',
+        }
+      : message(
+          `msg_${++this.seq}`,
+          'assistant',
+          this.reply(input.text, conversation.projectId),
+          id,
+        );
     list.push(user, assistant);
     conversation.messageCount = list.length;
     if (conversation.title === 'New chat') conversation.title = input.text.slice(0, 60);

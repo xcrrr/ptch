@@ -216,6 +216,31 @@ describe('the conversation', () => {
     expect(c.getState().history).toEqual(['and again', 'hello there']);
   });
 
+  it('follows an answer the chat model writes: the status line says what it does, the text grows', async () => {
+    const { c, api } = await setup();
+    api.answerSteps = [
+      { status: 'pending', activity: 'Looking at your runs', blocks: [] },
+      { status: 'pending', activity: 'Writing', blocks: [{ type: 'text', text: 'Two runs' }] },
+      {
+        blocks: [
+          { type: 'text', text: 'Two runs failed today.' },
+          { type: 'open', view: 'runs', path: '/runs?status=attention', label: 'Failed runs' },
+        ],
+        ai: { model: 'claude-sonnet-5-5', costUsd: 0.004, inputTokens: 3000, outputTokens: 120 },
+      },
+    ];
+    await c.submit('what failed today?');
+    expect(c.getState().busy?.label).toBe('Thinking');
+    await c.submit('second question');
+    expect(c.getState().hint).toBe('Patch is still answering.');
+    await c.idle();
+    expect(c.getState().busy).toBeNull();
+    expect(api.log.filter((l) => l.startsWith('getMessage'))).toHaveLength(3);
+    expect(texts(c.getState())).toEqual(['what failed today?', 'Two runs failed today.']);
+    const answer = c.getState().entries.at(-1);
+    expect(answer?.kind === 'message' && answer.message.ai?.costUsd).toBe(0.004);
+  });
+
   it('returns a message that could not be sent to the prompt, with a readable line', async () => {
     const { c, api } = await setup();
     api.failures.push(new CloudApiError('Slow down.', 429, 'rate_limited'));

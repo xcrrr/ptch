@@ -46,6 +46,11 @@ export interface CloudStatus {
   worker: WorkerStatus;
   budget: BudgetStatus;
   usage: { today: UsageTotals; month: UsageTotals };
+  /**
+   * Whether chat answers come from the chat model (added in 0.5.0). `reason` says why not when
+   * `available` is false; `model` is null when the chat model is off in Settings.
+   */
+  chat?: { model: string | null; available: boolean; reason?: string };
 }
 
 /** Host readings taken on the machine the API runs on. Any value can be null when unavailable. */
@@ -77,6 +82,11 @@ export const SettingsSchema = z.object({
   /** Memory limit per task container, in MiB. */
   containerMemoryMb: z.number().int().min(256).max(12_288),
   containerCpus: z.number().min(0.5).max(4),
+  /**
+   * The model that writes chat answers (it reads Patch Cloud through read-only tools). null turns
+   * the model off: the chat then answers from records with fixed queries.
+   */
+  chatModel: z.string().min(1).max(100).nullable(),
 });
 export type Settings = z.infer<typeof SettingsSchema>;
 export const SettingsPatchSchema = SettingsSchema.partial();
@@ -92,6 +102,7 @@ export const DEFAULT_SETTINGS: Settings = {
   defaultMaxSteps: 200,
   containerMemoryMb: 3_072,
   containerCpus: 3,
+  chatModel: 'claude-sonnet-5-5',
 };
 
 export const LoginSchema = z.object({ password: z.string().min(1).max(1_000) });

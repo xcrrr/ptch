@@ -3,9 +3,11 @@ import { PERMISSION_PROFILES, type PermissionProfile, type TaskRecord } from './
 
 /**
  * Conversations: the chat in Patch HQ. A conversation belongs to the owner and optionally to a
- * project. Messages are stored by the API; the assistant's answers are produced by the API from
- * real Patch Cloud state (deterministic queries, no model tokens) or become a *proposal* the
- * owner must confirm before any task is created.
+ * project. Messages are stored by the API. The assistant's answers are written by a Claude model
+ * (the chat model in Settings) that reads real Patch Cloud state through read-only tools; with the
+ * chat model off, unreachable or over the spend limit, the API answers from its own records with
+ * deterministic queries instead. Either way a request for work becomes a *proposal* the owner must
+ * confirm before any task is created: the model cannot start, cancel or change anything.
  *
  * Blocks never copy volatile state: a `run` block holds the task id and the client renders the
  * live record, so a refresh, another device or the CLI always agree.
@@ -48,7 +50,35 @@ export type MessageBlock =
   /** What the chat can do, shown for requests it does not understand. */
   | { type: 'help'; examples: string[] }
   /** Said honestly when a request is outside what Patch Cloud does today. */
-  | { type: 'unsupported'; what: string };
+  | { type: 'unsupported'; what: string }
+  /**
+   * A place in Patch HQ the assistant points to. `navigate` is set when the owner asked to go
+   * there: a client that receives the finished message live may open it right away (never when
+   * the message is loaded later from history).
+   */
+  | {
+      type: 'open';
+      view: HqView;
+      /** Path inside Patch HQ, relative to /hq: "/runs?status=active", "/runs/tsk_…", "/brain?node=…". */
+      path: string;
+      label: string;
+      navigate?: boolean;
+    };
+
+/** Views of Patch HQ an `open` block can point to. */
+export const HQ_VIEWS = ['runs', 'run', 'projects', 'project', 'brain', 'settings'] as const;
+export type HqView = (typeof HQ_VIEWS)[number];
+
+/** What an assistant message is doing: absent once it is complete. */
+export type MessageStatus = 'pending' | 'failed';
+
+/** Which model wrote an assistant message, and what it cost (all model requests of the reply). */
+export interface MessageAi {
+  model: string;
+  costUsd: number;
+  inputTokens: number;
+  outputTokens: number;
+}
 
 export interface ConversationRecord {
   id: string;
@@ -66,6 +96,16 @@ export interface MessageRecord {
   role: MessageRole;
   blocks: MessageBlock[];
   createdAt: string;
+  /**
+   * `pending` while the chat model is still writing (blocks grow as it goes; poll
+   * `GET /conversations/:id/messages/:mid`), `failed` when it stopped with an error (the blocks
+   * say why). Absent on a complete message.
+   */
+  status?: MessageStatus;
+  /** While pending: what the assistant is doing now ("Reading run tsk_…"). */
+  activity?: string;
+  /** Set on a message a model wrote. */
+  ai?: MessageAi;
 }
 
 export interface ConversationDetail {
@@ -108,6 +148,16 @@ export const CHAT_SUGGESTIONS = [
   'Show my latest runs.',
   'What failed recently?',
   'How much have I spent today?',
+] as const;
+
+/** The default chat model: fast and inexpensive, and good at reading records and explaining. */
+export const DEFAULT_CHAT_MODEL = 'claude-sonnet-5-5';
+
+/** Chat models offered in Settings (any other model id is accepted too). */
+export const CHAT_MODELS = [
+  { id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5', note: 'default, fast and inexpensive' },
+  { id: 'claude-haiku-5-5', label: 'Claude Haiku 5.5', note: 'cheapest' },
+  { id: 'claude-opus-5-5', label: 'Claude Opus 5.5', note: 'most thorough, costs more' },
 ] as const;
 
 // ---------------------------------------------------------------------------------------------

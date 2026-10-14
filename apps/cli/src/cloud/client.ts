@@ -10,6 +10,7 @@ import {
   type ConversationRecord,
   type CreateConversationRequest,
   type DismissProposalResponse,
+  type MessageRecord,
   type SendMessageRequest,
   type SendMessageResponse,
   type CloudStatus,
@@ -243,6 +244,13 @@ export class CloudApi {
 
   getConversation(id: string): Promise<ConversationDetail> {
     return this.json(`/conversations/${encodeURIComponent(id)}`);
+  }
+
+  /** One message: how an answer the chat model is still writing is followed. */
+  getMessage(id: string, messageId: string): Promise<MessageRecord> {
+    return this.json(
+      `/conversations/${encodeURIComponent(id)}/messages/${encodeURIComponent(messageId)}`,
+    );
   }
 
   sendMessage(id: string, input: SendMessageRequest): Promise<SendMessageResponse> {

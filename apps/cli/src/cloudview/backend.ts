@@ -32,6 +32,7 @@ export type CloudViewApi = Pick<
   | 'listConversations'
   | 'createConversation'
   | 'getConversation'
+  | 'getMessage'
   | 'sendMessage'
   | 'confirmProposal'
   | 'dismissProposal'

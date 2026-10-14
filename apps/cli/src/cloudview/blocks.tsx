@@ -370,6 +370,24 @@ function HelpView({
   );
 }
 
+/** A screen of Patch HQ the answer points to: where to find it on the website. */
+function OpenView({
+  block,
+  width,
+}: {
+  block: Extract<ViewItem, { kind: 'open' }>['block'];
+  width: number;
+}) {
+  return (
+    <Block width={width}>
+      <Text>
+        {glyphs.pointer} {toDisplayText(block.label)}
+        <Text dimColor> · Patch HQ /hq{toDisplayText(block.path)}</Text>
+      </Text>
+    </Block>
+  );
+}
+
 function UnsupportedView({
   block,
   width,
@@ -596,6 +614,14 @@ function ItemContent(props: ItemViewProps) {
       return <HelpView block={item.block} width={width} />;
     case 'unsupported':
       return <UnsupportedView block={item.block} width={width} />;
+    case 'open':
+      return <OpenView block={item.block} width={width} />;
+    case 'meta':
+      return (
+        <Block width={width}>
+          <Text dimColor>{toDisplayText(item.text)}</Text>
+        </Block>
+      );
     case 'entry':
       return <EntryView entry={item.entry} width={width} />;
     case 'unknown':

@@ -848,7 +848,9 @@ export class CloudViewController {
       return;
     }
     if (this.state.busy) {
-      this.hint('Still sending the previous message.');
+      this.hint(
+        this.answering ? 'Patch is still answering.' : 'Still sending the previous message.',
+      );
       this.setDraft(text);
       return;
     }
@@ -884,6 +886,9 @@ export class CloudViewController {
         const found = this.state.projects.find((p) => p.id === chosen);
         if (found) this.setState({ project: { id: found.id, name: found.name } });
       }
+      if (response.assistant.status === 'pending') {
+        this.later(this.followAnswer(id, response.assistant));
+      }
     } catch (error) {
       this.setState({
         busy: null,
@@ -892,6 +897,37 @@ export class CloudViewController {
       // An expired sign-in has its own banner; the rest is said here.
       if ((error as CloudApiError).status !== 401) this.notice('error', errorText(error));
       this.setDraft(text);
+    }
+  }
+
+  /** True while an answer of the chat model is being followed. */
+  private answering = false;
+
+  /**
+   * Follows an answer the chat model is writing: reads the message again every half second,
+   * shows what it is doing on the status line, and lets the text grow in place until it is done.
+   */
+  private async followAnswer(conversationId: string, message: MessageRecord): Promise<void> {
+    const api = this.requireApi();
+    const startedAt = this.now();
+    let current = message;
+    this.answering = true;
+    this.setState({ busy: { label: current.activity ?? 'Thinking', startedAt } });
+    try {
+      while (current.status === 'pending' && this.now() - startedAt < 6 * 60_000) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        if (this.state.exiting || this.state.conversation?.id !== conversationId) return;
+        const next = await this.guard(() => api.getMessage(conversationId, current.id));
+        if (!next) continue;
+        current = next;
+        this.mergeMessages([next]);
+        if (next.status === 'pending') {
+          this.setState({ busy: { label: next.activity ?? 'Thinking', startedAt } });
+        }
+      }
+    } finally {
+      this.answering = false;
+      if (this.state.busy) this.setState({ busy: null });
     }
   }
 
